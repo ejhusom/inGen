@@ -1,0 +1,1 @@
+For cloud-based processing, the system scheduled non-urgent data analysis tasks to coincide with the availability of renewable energy sources, optimizing the use of green energy.

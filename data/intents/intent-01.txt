@@ -1,0 +1,1 @@
+Reduce energy consumption by 20% in the edge devices without compromising on the data processing latency.

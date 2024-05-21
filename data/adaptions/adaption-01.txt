@@ -1,0 +1,1 @@
+The system dynamically adjusted the workload distribution, prioritizing low-energy-consuming tasks on edge devices during peak hours and deferring energy-intensive tasks to off-peak hours.

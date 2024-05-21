@@ -1,0 +1,1 @@
+Implemented a more energy-efficient data processing algorithm on selected edge devices, which reduces energy consumption but slightly increases processing time.
