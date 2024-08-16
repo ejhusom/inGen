@@ -9,11 +9,13 @@ feedback.
 
 """
 import configparser
+import os
 import re
 
 from langchain.llms import OpenAI
+from langchain_openai import AzureOpenAI
 from langchain_community.llms import Ollama
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 
 CONFIG_FILE_PATH = "config/config.ini"
 DATA_FILE_PATH = "data/"
@@ -80,6 +82,15 @@ class ExplanationGenerator:
             if not api_key:
                 raise ValueError("API key for OpenAI is required in config.ini")
             return OpenAI(api_key=api_key)
+        elif llm_name == "azure":
+            api_version="2024-02-15-preview"
+            llm = AzureOpenAI(
+                deployment_name=os.getenv("AZURE_DEPLOYMENT_NAME"),
+                azure_endpoint =os.getenv("AZURE_OPENAI_ENDPOINT"),
+                openai_api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
+                openai_api_key=os.getenv("AZURE_OPENAI_KEY"),
+            )
+            return llm
         elif llm_name == 'ollama':
             model = self.config.get('Ollama', 'model', fallback='llama3')
             return Ollama(model=model)
@@ -103,7 +114,6 @@ class ExplanationGenerator:
         prompt = self._generate_explanation_prompt(log_entries)
         print("Creating chain...")
         chain = prompt | self.llm
-        breakpoint()
         print("Evoking chain...")
         result = chain.invoke({})
         return result
@@ -131,11 +141,12 @@ class ExplanationGenerator:
         full_system_prompt = f"{use_case_context}\n\n{system_prompt}"
 
         messages = [("system", full_system_prompt)]
-        breakpoint()
         # messages += [("user", entry) for entry in log_entries]
-        messages += [("user", entry) for entry in log_entries]
+        messages += [("user", "\n".join(log_entries))]
 
-        prompt = ChatPromptTemplate.from_messages(messages)
+        # prompt = ChatPromptTemplate.from_messages(messages)
+        prompt = str(full_system_prompt + "\n".join(log_entries))
+        prompt = PromptTemplate.from_template(prompt)
 
         return prompt
 
